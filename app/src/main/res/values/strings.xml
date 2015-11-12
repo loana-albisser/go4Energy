@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">go4Energy</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="btn_multiplayer">Mulitplayer</string>
+    <string name="btn_singleplayer">Singleplayer</string>
+    <string name="btn_options">Options</string>
+
 </resources>
