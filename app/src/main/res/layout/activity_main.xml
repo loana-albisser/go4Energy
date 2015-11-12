@@ -27,10 +27,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
+            android:onClick="startMultiplayer"
             android:layout_margin="4dp"
             android:text="@string/btn_multiplayer"
             android:visibility="visible"
-            android:background="#99ffffff" />
+            android:background="#99ffffff"
+            android:clickable="true" />
         <Button
             android:id="@+id/btn_singleplayer"
             android:layout_width="match_parent"
@@ -38,7 +40,8 @@
             android:padding="10dp"
             android:layout_margin="4dp"
             android:text="@string/btn_singleplayer"
-            android:background="#99ffffff" />
+            android:background="#99ffffff"
+            android:clickable="true" />
         <Button
             android:id="@+id/btn_options"
             android:layout_width="match_parent"
@@ -46,7 +49,8 @@
             android:padding="10dp"
             android:layout_margin="4dp"
             android:text="@string/btn_options"
-            android:background="#90ffffff" />
+            android:background="#90ffffff"
+            android:clickable="true" />
     </LinearLayout>
 
 </RelativeLayout>

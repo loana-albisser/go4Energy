@@ -5,5 +5,6 @@
     <string name="btn_multiplayer">Mulitplayer</string>
     <string name="btn_singleplayer">Singleplayer</string>
     <string name="btn_options">Options</string>
+    <string name="txt_multiplayer">Coming Soon!</string>
 
 </resources>
