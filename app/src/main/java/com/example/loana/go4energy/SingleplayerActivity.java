@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -23,7 +24,7 @@ import java.util.List;
 /**
  * Created by Loana on 13.11.2015.
  */
-public class SingleplayerActivity extends Activity {
+public class SingleplayerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +46,8 @@ public class SingleplayerActivity extends Activity {
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) textView.getLayoutParams();
 
                 // Set the width/height of GridView Item
-                params.width = getPixelsFromDPs(SingleplayerActivity.this, 75);
-                params.height = getPixelsFromDPs(SingleplayerActivity.this, 75);
+                params.width = getPixelsFromDPs(SingleplayerActivity.this);
+                params.height = getPixelsFromDPs(SingleplayerActivity.this);
 
                 textView.setLayoutParams(params);
                 textView.setGravity(Gravity.CENTER);
@@ -69,11 +70,10 @@ public class SingleplayerActivity extends Activity {
     }
 
     // Method for converting DP value to pixels
-    public static int getPixelsFromDPs(Activity activity, int dps){
+    private static int getPixelsFromDPs(Activity activity){
         Resources r = activity.getResources();
-        int  px = (int) (TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, dps, r.getDisplayMetrics()));
-        return px;
+        return (int) (TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 75, r.getDisplayMetrics()));
     }
 }
 
