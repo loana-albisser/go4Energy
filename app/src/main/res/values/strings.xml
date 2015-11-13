@@ -7,5 +7,6 @@
     <string name="btn_options">Options</string>
     <string name="txt_multiplayer">Coming Soon!</string>
     <string name="btn_nextLevel">Next</string>
+    <string name="txt_question">New Text</string>
 
 </resources>
