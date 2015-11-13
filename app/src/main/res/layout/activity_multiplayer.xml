@@ -10,7 +10,8 @@
     tools:context=".MainActivity"
     android:background="@drawable/background"
     android:weightSum="1"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:ignore="Overdraw">
 
     <TextView
         android:layout_width="wrap_content"

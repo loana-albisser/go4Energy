@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background">
+    android:background="@drawable/background"
+    tools:ignore="Overdraw">
 
     <LinearLayout
     android:orientation="vertical"
@@ -20,7 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/txt_question"
-        android:id="@+id/txt_question" />
+        android:id="@+id/txt_question"
+        android:layout_margin="10dp" />
 </LinearLayout>
 
     <LinearLayout
@@ -37,8 +40,32 @@
 
         <RadioGroup
             android:layout_width="match_parent"
-            android:layout_height="162dp"
-            android:id="@+id/rd_answers"></RadioGroup>
+            android:layout_height="match_parent"
+            android:id="@+id/rd_answers"
+            android:layout_margin="10dp">
+
+            <RadioButton
+                android:id="@+id/answer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rd_answer1"
+                android:checked="true" />
+
+            <RadioButton
+                android:id="@+id/answer2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rd_answer2" />
+
+            <RadioButton
+                android:id="@+id/answer3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rd_answer3" />
+        </RadioGroup><![CDATA[
+
+        />
+    ]]>
     </LinearLayout>
 
 </RelativeLayout>

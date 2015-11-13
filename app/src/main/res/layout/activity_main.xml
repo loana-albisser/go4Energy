@@ -9,7 +9,8 @@
     tools:context=".MainActivity"
     android:background="@drawable/background"
     android:touchscreenBlocksFocus="false"
-    android:focusable="false">
+    android:focusable="false"
+    tools:ignore="Overdraw">
 
     <LinearLayout
         android:orientation="vertical"
