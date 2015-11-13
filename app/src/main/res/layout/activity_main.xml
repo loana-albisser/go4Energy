@@ -7,8 +7,9 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity"
-    android:background="@drawable/background_main"
-    android:touchscreenBlocksFocus="false">
+    android:background="@drawable/background"
+    android:touchscreenBlocksFocus="false"
+    android:focusable="false">
 
     <LinearLayout
         android:orientation="vertical"
@@ -17,7 +18,7 @@
         android:padding="10dp"
         android:layout_centerInParent="true"
         android:layout_centerVertical="true"
-        android:background="@drawable/linearlayout_bg"
+        android:background="@drawable/bg_linearlayout"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
@@ -31,25 +32,27 @@
             android:layout_margin="4dp"
             android:text="@string/btn_multiplayer"
             android:visibility="visible"
-            android:background="#99ffffff"
+            android:background="@drawable/button"
             android:clickable="true" />
         <Button
             android:id="@+id/btn_singleplayer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
+            android:onClick="startSingleplayer"
             android:layout_margin="4dp"
             android:text="@string/btn_singleplayer"
-            android:background="#99ffffff"
+            android:background="@drawable/button"
             android:clickable="true" />
         <Button
             android:id="@+id/btn_options"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
+            android:onClick="startOption"
             android:layout_margin="4dp"
             android:text="@string/btn_options"
-            android:background="#90ffffff"
+            android:background="@drawable/button"
             android:clickable="true" />
     </LinearLayout>
 

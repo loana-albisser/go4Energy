@@ -6,18 +6,29 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
 
     public void startMultiplayer(View view) {
         Intent intent = new Intent(this, MultiplayerActivity.class);
         startActivity(intent);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public void startSingleplayer(View view) {
+        Intent intent = new Intent(this, SingleplayerActivity.class);
+        startActivity(intent);
+    }
+
+    public void startOption(View view) {
+        Intent intent = new Intent(this, MultiplayerActivity.class);
+        startActivity(intent);
     }
 
     @Override
