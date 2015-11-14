@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startOption(View view) {
-        Intent intent = new Intent(this, MultiplayerActivity.class);
+        Intent intent = new Intent(this, OptionsActivity.class);
         startActivity(intent);
     }
 

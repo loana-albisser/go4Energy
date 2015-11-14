@@ -17,6 +17,7 @@
         </activity>
         <activity android:name=".MultiplayerActivity"/>
         <activity android:name=".SingleplayerActivity"/>
+        <activity android:name=".OptionsActivity"/>
     </application>
 
 </manifest>

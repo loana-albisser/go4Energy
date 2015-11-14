@@ -8,65 +8,79 @@
     tools:ignore="Overdraw">
 
     <LinearLayout
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:layout_alignParentTop="false"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentStart="true"
-    android:background="#99ffffff"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/txt_question"
-        android:id="@+id/txt_question"
-        android:layout_margin="10dp" />
-</LinearLayout>
-
-    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentStart="false"
-        android:background="#99ffffff"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp">
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_linearlayout"
+        android:layout_margin="10dp"
+        android:layout_above="@+id/btn_next">
 
-        <RadioGroup
+        <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+            android:background="#99ffffff"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_question"
+            android:id="@+id/txt_question"
+            android:layout_margin="10dp" />
+    </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/rd_answers"
+            android:layout_height="190dp"
+            android:background="#99ffffff"
             android:layout_margin="10dp">
 
-            <RadioButton
-                android:id="@+id/answer1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/rd_answer1"
-                android:checked="true" />
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="161dp"
+                android:id="@+id/rd_answers"
+                android:layout_margin="10dp">
 
-            <RadioButton
-                android:id="@+id/answer2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/rd_answer2" />
+                <RadioButton
+                    android:id="@+id/answer1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rd_answer1"
+                    android:checked="true" />
 
-            <RadioButton
-                android:id="@+id/answer3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/rd_answer3" />
-        </RadioGroup><![CDATA[
+                <RadioButton
+                    android:id="@+id/answer2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rd_answer2" />
 
-        />
-    ]]>
+                <RadioButton
+                    android:id="@+id/answer3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rd_answer3" />
+            </RadioGroup>
+        </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="@string/btn_choose"
+        android:onClick="chooseAnswer"
+        android:visibility="visible"
+        android:background="@drawable/button"
+        android:clickable="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10dp"/>
 
 </RelativeLayout>
