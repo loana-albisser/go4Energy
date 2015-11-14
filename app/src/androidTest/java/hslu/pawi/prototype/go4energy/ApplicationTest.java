@@ -1,4 +1,4 @@
-package com.example.loana.go4energy;
+package hslu.pawi.prototype.go4energy;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

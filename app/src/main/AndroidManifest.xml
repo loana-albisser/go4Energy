@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.loana.go4energy" >
+    package="hslu.pawi.prototype.go4energy" >
 
     <application
         android:allowBackup="true"
@@ -8,16 +8,16 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="hslu.pawi.prototype.go4energy.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MultiplayerActivity"/>
-        <activity android:name=".SingleplayerActivity"/>
-        <activity android:name=".OptionsActivity"/>
+        <activity android:name="hslu.pawi.prototype.go4energy.MultiplayerActivity"/>
+        <activity android:name="hslu.pawi.prototype.go4energy.SingleplayerActivity"/>
+        <activity android:name="hslu.pawi.prototype.go4energy.OptionsActivity"/>
     </application>
 
 </manifest>
