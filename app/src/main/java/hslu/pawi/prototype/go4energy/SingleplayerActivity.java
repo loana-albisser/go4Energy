@@ -82,5 +82,9 @@ public class SingleplayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_answer);
     }
 
+    public void nextQuestion(View view){
+        setContentView(R.layout.activity_question);
+    }
+
 }
 
