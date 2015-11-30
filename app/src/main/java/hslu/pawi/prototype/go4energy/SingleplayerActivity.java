@@ -34,8 +34,6 @@ public class SingleplayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singleplayer_leveloverview);
         setLevelOverview();
-
-
     }
 
     public void setLevelOverview(){
@@ -94,6 +92,7 @@ public class SingleplayerActivity extends AppCompatActivity {
 
     public void nextQuestion(View view){
         setContentView(R.layout.activity_question);
+        setcountdownTimer();
     }
 
    public void setcountdownTimer(){
@@ -113,7 +112,8 @@ public class SingleplayerActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                setContentView(R.layout.activity_main);
+                                setContentView(R.layout.activity_singleplayer_leveloverview);
+                                setLevelOverview();
                             }
                         });
                 alertDialog.show();
