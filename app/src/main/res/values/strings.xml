@@ -10,11 +10,12 @@
     <string name="btn_nextQuestion">nächste Frage</string>
 
     <string name="txt_multiplayer">Coming Soon!</string>
-    <string name="txt_question">New Text</string>
+    <string name="txt_question">In der Schweiz wird am meisten Elektrizität (Strom) erzeugt mit? </string>
 
-    <string name="rd_answer1">Answer 1</string>
-    <string name="rd_answer2">Answer 2</string>
-    <string name="rd_answer3">Answer 2</string>
+    <string name="rd_answer1">der Sonne</string>
+    <string name="rd_answer2">Wasserkraft</string>
+    <string name="rd_answer3">Kernkraftwerken</string>
+    <string name="rd_answer4">Gaskraftwerke</string>
     <string name="txt_eval">Ihre Antwort ist RICHTIG</string>
 
 

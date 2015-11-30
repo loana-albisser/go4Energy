@@ -1,9 +1,12 @@
 package hslu.pawi.prototype.go4energy;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -30,18 +33,23 @@ public class SingleplayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singleplayer_leveloverview);
+        setLevelOverview();
 
+
+    }
+
+    public void setLevelOverview(){
         GridView gridView = (GridView) findViewById(R.id.gridView);
         String[] levelNumber = new String[]{"1", "2","3","4","5","7","8","9","10","11","12","13" };
         final List<String> levelList = new ArrayList(Arrays.asList(levelNumber));
 
         gridView.setAdapter(new ArrayAdapter<String>(
                 this, android.R.layout.simple_list_item_1, levelList) {
-                    public View getView(int position, View convertView, ViewGroup parent) {
+                public View getView(int position, View convertView, ViewGroup parent) {
                     View view = super.getView(position, convertView, parent);
                     TextView textView = (TextView) view;
                     RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
                     );
                     textView.setLayoutParams(layoutParams);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) textView.getLayoutParams();
@@ -59,15 +67,16 @@ public class SingleplayerActivity extends AppCompatActivity {
 
                     return textView;
                 }
-            });
+        });
 
-            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String selectedItem = parent.getItemAtPosition(position).toString();
-            Toast.makeText(getApplicationContext(),selectedItem,Toast.LENGTH_LONG).show();
+                String selectedItem = parent.getItemAtPosition(position).toString();
+                Toast.makeText(getApplicationContext(),selectedItem,Toast.LENGTH_LONG).show();
                 setContentView(R.layout.activity_question);
-                }
+                setcountdownTimer();
+            }
         });
     }
 
@@ -78,6 +87,7 @@ public class SingleplayerActivity extends AppCompatActivity {
                 TypedValue.COMPLEX_UNIT_DIP, 75, r.getDisplayMetrics()));
     }
 
+
     public void chooseAnswer(View view){
         setContentView(R.layout.activity_answer);
     }
@@ -85,6 +95,34 @@ public class SingleplayerActivity extends AppCompatActivity {
     public void nextQuestion(View view){
         setContentView(R.layout.activity_question);
     }
+
+   public void setcountdownTimer(){
+        final TextView counter = (TextView) findViewById(R.id.counter);
+        new CountDownTimer(10000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+
+                counter.setText("Verbleibende Zeit: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                AlertDialog alertDialog = new AlertDialog.Builder(SingleplayerActivity.this).create();
+                alertDialog.setTitle("Achtung!");
+                alertDialog.setMessage("Ihre Zeit ist abgelaufen!");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                setContentView(R.layout.activity_main);
+                            }
+                        });
+                alertDialog.show();
+            }
+        }.start();
+    }
+
+
+
 
 }
 

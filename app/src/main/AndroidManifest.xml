@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name="hslu.pawi.prototype.go4energy.MultiplayerActivity"/>
-        <activity android:name="hslu.pawi.prototype.go4energy.SingleplayerActivity"/>
+        <activity android:name=".SingleplayerActivity"/>
         <activity android:name="hslu.pawi.prototype.go4energy.OptionsActivity"/>
     </application>
 

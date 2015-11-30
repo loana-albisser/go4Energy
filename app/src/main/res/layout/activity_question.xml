@@ -15,6 +15,14 @@
         android:layout_margin="10dp"
         android:layout_above="@+id/btn_next">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/counter"
+            android:text="Verbleibende Zeit:"
+            android:textColor="#ffffff"
+            android:layout_margin="5dp" />
+
         <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -30,13 +38,14 @@
             android:layout_height="wrap_content"
             android:text="@string/txt_question"
             android:id="@+id/txt_question"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:textSize="18dp" />
     </LinearLayout>
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="190dp"
+            android:layout_height="160dp"
             android:background="#99ffffff"
             android:layout_margin="10dp">
 
@@ -64,6 +73,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/rd_answer3" />
+
+                <RadioButton
+                    android:id="@+id/answer4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rd_answer4" />
             </RadioGroup>
         </LinearLayout>
     </LinearLayout>
