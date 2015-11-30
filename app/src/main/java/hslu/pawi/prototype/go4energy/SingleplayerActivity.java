@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class SingleplayerActivity extends AppCompatActivity {
 
-
+    private CountDownTimer countDownTimer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +88,8 @@ public class SingleplayerActivity extends AppCompatActivity {
 
     public void chooseAnswer(View view){
         setContentView(R.layout.activity_answer);
+        countDownTimer.cancel();
+
     }
 
     public void nextQuestion(View view){
@@ -96,29 +98,34 @@ public class SingleplayerActivity extends AppCompatActivity {
     }
 
    public void setcountdownTimer(){
-        final TextView counter = (TextView) findViewById(R.id.counter);
-        new CountDownTimer(10000, 1000) {
+       final TextView counter = (TextView) findViewById(R.id.counter);
 
-            public void onTick(long millisUntilFinished) {
+       countDownTimer = new CountDownTimer(10000,1000) {
 
-                counter.setText("Verbleibende Zeit: " + millisUntilFinished / 1000);
-            }
+           @Override
+           public void onTick(long millisUntilFinished) {
+               counter.setText("Verbleibende Zeit: " + millisUntilFinished / 1000);
+           }
 
-            public void onFinish() {
-                AlertDialog alertDialog = new AlertDialog.Builder(SingleplayerActivity.this).create();
-                alertDialog.setTitle("Achtung!");
-                alertDialog.setMessage("Ihre Zeit ist abgelaufen!");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                setContentView(R.layout.activity_singleplayer_leveloverview);
-                                setLevelOverview();
-                            }
-                        });
-                alertDialog.show();
-            }
-        }.start();
+           @Override
+           public void onFinish() {
+               AlertDialog alertDialog = new AlertDialog.Builder(SingleplayerActivity.this).create();
+               alertDialog.setTitle("Achtung!");
+               alertDialog.setMessage("Ihre Zeit ist abgelaufen!");
+               alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                       new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int which) {
+                               dialog.dismiss();
+                               setContentView(R.layout.activity_singleplayer_leveloverview);
+                               setLevelOverview();
+                           }
+                       });
+               alertDialog.show();
+           }
+       };
+
+       countDownTimer.start();
+
     }
 
 
