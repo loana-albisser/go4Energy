@@ -13,8 +13,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
     }
+
+
 
     public void startMultiplayer(View view) {
         Intent intent = new Intent(this, MultiplayerActivity.class);

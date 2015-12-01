@@ -17,6 +17,7 @@
     <string name="rd_answer3">Kernkraftwerken</string>
     <string name="rd_answer4">Gaskraftwerke</string>
     <string name="txt_eval">Ihre Antwort ist RICHTIG</string>
+    <string name="counter">Verbleibende Zeit:</string>
 
 
 </resources>
