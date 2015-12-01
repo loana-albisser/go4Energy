@@ -40,12 +40,14 @@ public class DbAdapter {
     }
 
     public CategoryDTO getCategoryByID(int id){
+        CategoryDTO categoryDTO = null;
         String selectQuery = "Select * from "+DbHelper.TABLE_CATEGORY+
                 " where "+DbHelper.COLUMN_ID+" = "+id;
         Cursor result = db.rawQuery(selectQuery,null);
-
-        CategoryDTO categoryDTO = createCategoryFromResult(result);
-
+        if(result!=null && result.getCount()>0) {
+            result.moveToFirst();
+            categoryDTO = createCategoryFromResult(result);
+        }
         return categoryDTO;
     }
 
@@ -54,6 +56,7 @@ public class DbAdapter {
         String selectQuery = "Select * from "+DbHelper.TABLE_CATEGORY;
         Cursor result = db.rawQuery(selectQuery, null);
         if(result!=null && result.getCount()>0) {
+            result.moveToPosition(-1);
             while (result.moveToNext()) {
                 allCategoryDTO.add(createCategoryFromResult(result));
             }
@@ -61,6 +64,7 @@ public class DbAdapter {
         else{
             allCategoryDTO = null;
         }
+        result.close();
 
         return allCategoryDTO;
     }
@@ -87,24 +91,28 @@ public class DbAdapter {
 
     private AnswerDTO createAnswerFromResult(Cursor result) {
         AnswerDTO answerDTO = null;
-
-        if(result != null && result.getCount()>0){
-            answerDTO = new AnswerDTO();
-            answerDTO.setId(result.getInt(result.getColumnIndex(DbHelper.COLUMN_ID)));
-            answerDTO.setQid(result.getInt(result.getColumnIndex(DbHelper.COLUMN_QUESTION)));
-            answerDTO.setValue(result.getString(result.getColumnIndex(DbHelper.COLUMN_VALUE)));
-            answerDTO.setCorrect(result.getInt(result.getColumnIndex(DbHelper.COLUMN_ACTIVE)) > 0);
-            answerDTO.setActive(result.getInt(result.getColumnIndex(DbHelper.COLUMN_VALUE)) > 0);
+        try {
+            if (result != null && result.getCount() > 0) {
+                answerDTO = new AnswerDTO();
+                answerDTO.setId(result.getInt(result.getColumnIndex(DbHelper.COLUMN_ID)));
+                answerDTO.setQid(result.getInt(result.getColumnIndex(DbHelper.COLUMN_QUESTION)));
+                answerDTO.setValue(result.getString(result.getColumnIndex(DbHelper.COLUMN_VALUE)));
+                answerDTO.setCorrect(result.getInt(result.getColumnIndex(DbHelper.COLUMN_CORRECT)) > 0);
+                answerDTO.setActive(result.getInt(result.getColumnIndex(DbHelper.COLUMN_ACTIVE)) > 0);
+            }
+        }catch (Exception e){
+            e.getStackTrace();
         }
         return answerDTO;
     }
 
     public List<AnswerDTO> getAllAnswersByQuestion(int questionID){
         List<AnswerDTO> allAnswerDTO = new ArrayList<>();
-        String selectQuery = "Select * from "+DbHelper.TABLE_CATEGORY+
+        String selectQuery = "Select * from "+DbHelper.TABLE_ANSWER+
                 " where "+DbHelper.COLUMN_QUESTION + " = "+questionID;
         Cursor result = db.rawQuery(selectQuery, null);
         if(result!=null && result.getCount()>0) {
+            result.moveToPosition(-1);
             while (result.moveToNext()) {
                 allAnswerDTO.add(createAnswerFromResult(result));
             }
@@ -112,20 +120,26 @@ public class DbAdapter {
         else{
             allAnswerDTO = null;
         }
-
+        result.close();
         return allAnswerDTO;
     }
 
-    public List<QuestionDTO> getAllQuestions(){
+    public List<QuestionDTO> getAllQuestions() throws Exception{
         List<QuestionDTO> allQuestions = new ArrayList<>();
-        String selectQuery = "Select * from "+dbHelper.TABLE_QUESTION;
-        Cursor result = db.rawQuery(selectQuery, null);
-        if(result!=null && result.getCount()>0) {
-            while (result.moveToNext()){
-                allQuestions.add(createQuestionFromResult(result));
+        try {
+            String selectQuery = "Select * from " + dbHelper.TABLE_QUESTION;
+            Cursor result = db.rawQuery(selectQuery, null);
+            if (result != null && result.getCount() > 0) {
+                result.moveToPosition(-1);
+                while (result.moveToNext()) {
+                    allQuestions.add(createQuestionFromResult(result));
+                }
             }
+            result.close();
         }
-
+        catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
         return  allQuestions;
     }
 
@@ -134,27 +148,33 @@ public class DbAdapter {
         String selectQuery = "Select * from "+dbHelper.TABLE_QUESTION;
         Cursor result = db.rawQuery(selectQuery, null);
         if(result!=null && result.getCount()>0) {
+            result.moveToPosition(-1);
             while (result.moveToNext()){
                 allQuestions.add(createQuestionFromResult(result));
             }
         }
-
+        result.close();
 
         return  allQuestions;
     }
 
     private QuestionDTO createQuestionFromResult(Cursor result) {
         QuestionDTO questionDTO = null;
+        try {
 
-        if(result != null && result.getCount()>0){
-            questionDTO = new QuestionDTO();
-            questionDTO.setId(result.getInt(result.getColumnIndex(DbHelper.COLUMN_ID)));
-            questionDTO.setDescription(result.getString(result.getColumnIndex(DbHelper.COLUMN_DESC)));
-            questionDTO.setAnswers(getAllAnswersByQuestion(questionDTO.getId()));
-            questionDTO.setCategoryDTO(getCategoryByID(result.getInt(result.getColumnIndex(DbHelper.COLUMN_CATEGORY))));
-            questionDTO.setDifficulty(result.getInt(result.getColumnIndex(DbHelper.COLUMN_DIFFICULTY)));
-            questionDTO.setInformations(result.getString(result.getColumnIndex(DbHelper.COLUMN_INFORMATIONS)));
-            questionDTO.setActive(result.getInt(result.getColumnIndex(DbHelper.COLUMN_VALUE)) > 0);
+
+            if (result != null && result.getCount() > 0) {
+                questionDTO = new QuestionDTO();
+                questionDTO.setId(result.getInt(result.getColumnIndex(DbHelper.COLUMN_ID)));
+                questionDTO.setDescription(result.getString(result.getColumnIndex(DbHelper.COLUMN_DESC)));
+                questionDTO.setAnswers(getAllAnswersByQuestion(questionDTO.getId()));
+                questionDTO.setCategoryDTO(getCategoryByID(result.getInt(result.getColumnIndex(DbHelper.COLUMN_CATEGORY))));
+                questionDTO.setDifficulty(result.getInt(result.getColumnIndex(DbHelper.COLUMN_DIFFICULTY)));
+                questionDTO.setInformations(result.getString(result.getColumnIndex(DbHelper.COLUMN_INFORMATIONS)));
+                questionDTO.setActive(result.getInt(result.getColumnIndex(DbHelper.COLUMN_ACTIVE)) > 0);
+            }
+        }catch (Exception e){
+            e.getStackTrace();
         }
         return questionDTO;
     }

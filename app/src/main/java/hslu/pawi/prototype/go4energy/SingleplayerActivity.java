@@ -39,6 +39,7 @@ public class SingleplayerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.deleteDatabase(DbAdapter.DB_NAME);
         dbAdapter = new DbAdapter(getApplicationContext());
         dbAdapter.open();
         setContentView(R.layout.activity_singleplayer_leveloverview);
@@ -103,10 +104,14 @@ public class SingleplayerActivity extends AppCompatActivity {
     }
 
     public void getQuestion(){
-        questions = new ArrayList<>(dbAdapter.getAllQuestions());
-       
-        final TextView questionField = (TextView)findViewById(R.id.txt_question);
+        try {
+            questions = new ArrayList<>(dbAdapter.getAllQuestions());
 
+            final TextView questionField = (TextView) findViewById(R.id.txt_question);
+
+        } catch (Exception e){
+            e.getStackTrace();
+        }
     }
 
     // Method for converting DP value to pixels
