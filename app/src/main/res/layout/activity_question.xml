@@ -36,7 +36,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/txt_question"
+            android:text=""
             android:id="@+id/txt_question"
             android:layout_margin="10dp"
             android:textSize="18sp" />
@@ -55,30 +55,7 @@
                 android:id="@+id/rd_answers"
                 android:layout_margin="10dp">
 
-                <RadioButton
-                    android:id="@+id/answer1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/rd_answer1"
-                    android:checked="true" />
 
-                <RadioButton
-                    android:id="@+id/answer2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/rd_answer2" />
-
-                <RadioButton
-                    android:id="@+id/answer3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/rd_answer3" />
-
-                <RadioButton
-                    android:id="@+id/answer4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/rd_answer4" />
             </RadioGroup>
         </LinearLayout>
     </LinearLayout>

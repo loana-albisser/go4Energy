@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,8 +24,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import hslu.pawi.prototype.go4energy.database.DbAdapter;
+import hslu.pawi.prototype.go4energy.dto.AnswerDTO;
 import hslu.pawi.prototype.go4energy.dto.QuestionDTO;
 
 
@@ -36,6 +40,20 @@ public class SingleplayerActivity extends AppCompatActivity {
 
     private DbAdapter dbAdapter;
     private ArrayList<QuestionDTO>questions = new ArrayList<>();
+    private ArrayList<AnswerDTO>answers = new ArrayList<>();
+
+
+    private int numberOfQuestions = 9;
+    private int randQuestionId;
+    private ArrayList<Integer>avaiable = new ArrayList<>();
+    private Random random;
+
+    public SingleplayerActivity(){
+        random = new Random();
+        for(int i=0; i<numberOfQuestions;i++){
+            avaiable.add(i);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,22 +115,39 @@ public class SingleplayerActivity extends AppCompatActivity {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 Toast.makeText(getApplicationContext(), selectedItem, Toast.LENGTH_LONG).show();
                 setContentView(R.layout.activity_question);
-                getQuestion();
-                countDownTimer = new MyCountDownTimer(10000, 1000);
-                countDownTimer.start();
+                setupQuestionActicity();
             }
         });
     }
 
-    public void getQuestion(){
+    public void getQuestion() {
         try {
             questions = new ArrayList<>(dbAdapter.getAllQuestions());
             final TextView questionField = (TextView) findViewById(R.id.txt_question);
-            questionField.setText((CharSequence) questions.get(1).getDescription());
+            int randQuestionId = random.nextInt(avaiable.size());
+            questionField.setText(questions.get(randQuestionId).getDescription());
+            avaiable.remove(randQuestionId);
 
-        } catch (Exception e){
+            answers = new ArrayList<>(dbAdapter.getAllAnswersByQuestion(randQuestionId));
+            RadioGroup group = (RadioGroup) findViewById(R.id.rd_answers);
+            RadioButton answersOptions;
+            for(int i = 0; i < answers.size(); i++) {
+                answersOptions = new RadioButton(this);
+                answersOptions.setText(answers.get(i).getValue());
+                group.addView(answersOptions);
+            }
+
+        } catch (Exception e) {
             e.getStackTrace();
         }
+    }
+
+
+
+    public void setupQuestionActicity(){
+        getQuestion();
+        countDownTimer = new MyCountDownTimer(10000, 1000);
+        countDownTimer.start();
     }
 
     // Method for converting DP value to pixels
@@ -131,8 +166,7 @@ public class SingleplayerActivity extends AppCompatActivity {
 
     public void nextQuestion(View view){
         setContentView(R.layout.activity_question);
-        countDownTimer = new MyCountDownTimer(10000,1000);
-        countDownTimer.start();
+        setupQuestionActicity();
     }
 
 
