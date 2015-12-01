@@ -29,6 +29,7 @@ import java.util.List;
 public class SingleplayerActivity extends AppCompatActivity {
 
     private CountDownTimer countDownTimer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +74,8 @@ public class SingleplayerActivity extends AppCompatActivity {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 Toast.makeText(getApplicationContext(),selectedItem,Toast.LENGTH_LONG).show();
                 setContentView(R.layout.activity_question);
-                setcountdownTimer();
+                countDownTimer = new MyCountDownTimer(10000,1000);
+                countDownTimer.start();
             }
         });
     }
@@ -94,38 +96,44 @@ public class SingleplayerActivity extends AppCompatActivity {
 
     public void nextQuestion(View view){
         setContentView(R.layout.activity_question);
-        setcountdownTimer();
+        countDownTimer = new MyCountDownTimer(10000,1000);
+        countDownTimer.start();
     }
 
-   public void setcountdownTimer(){
-       final TextView counter = (TextView) findViewById(R.id.counter);
 
-       countDownTimer = new CountDownTimer(10000,1000) {
+    private class MyCountDownTimer extends CountDownTimer {
+        final TextView counter = (TextView) findViewById(R.id.counter);
+        /**
+         * @param millisInFuture    The number of millis in the future from the call
+         *                          to {@link #start()} until the countdown is done and {@link #onFinish()}
+         *                          is called.
+         * @param countDownInterval The interval along the way to receive
+         *                          {@link #onTick(long)} callbacks.
+         */
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
 
-           @Override
-           public void onTick(long millisUntilFinished) {
-               counter.setText("Verbleibende Zeit: " + millisUntilFinished / 1000);
-           }
+        @Override
+        public void onTick(long millisUntilFinished) {
+            counter.setText("Verbleibende Zeit: " + millisUntilFinished / 1000);
+        }
 
-           @Override
-           public void onFinish() {
-               AlertDialog alertDialog = new AlertDialog.Builder(SingleplayerActivity.this).create();
-               alertDialog.setTitle("Achtung!");
-               alertDialog.setMessage("Ihre Zeit ist abgelaufen!");
-               alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                       new DialogInterface.OnClickListener() {
-                           public void onClick(DialogInterface dialog, int which) {
-                               dialog.dismiss();
-                               setContentView(R.layout.activity_singleplayer_leveloverview);
-                               setLevelOverview();
-                           }
-                       });
-               alertDialog.show();
-           }
-       };
-
-       countDownTimer.start();
-
+        @Override
+        public void onFinish() {
+            AlertDialog alertDialog = new AlertDialog.Builder(SingleplayerActivity.this).create();
+            alertDialog.setTitle("Achtung!");
+            alertDialog.setMessage("Ihre Zeit ist abgelaufen!");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            setContentView(R.layout.activity_singleplayer_leveloverview);
+                            setLevelOverview();
+                        }
+                    });
+            alertDialog.show();
+        }
     }
 
 
