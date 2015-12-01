@@ -26,6 +26,7 @@ import java.util.List;
 import hslu.pawi.prototype.go4energy.database.DbAdapter;
 import hslu.pawi.prototype.go4energy.dto.QuestionDTO;
 
+
 /**
  * Created by Loana on 13.11.2015.
  */
@@ -106,8 +107,8 @@ public class SingleplayerActivity extends AppCompatActivity {
     public void getQuestion(){
         try {
             questions = new ArrayList<>(dbAdapter.getAllQuestions());
-
             final TextView questionField = (TextView) findViewById(R.id.txt_question);
+            questionField.setText((CharSequence) questions.get(1).getDescription());
 
         } catch (Exception e){
             e.getStackTrace();
