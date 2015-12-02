@@ -8,6 +8,9 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -25,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import hslu.pawi.prototype.go4energy.database.DbAdapter;
 import hslu.pawi.prototype.go4energy.dto.AnswerDTO;
@@ -43,16 +48,24 @@ public class SingleplayerActivity extends AppCompatActivity {
     private ArrayList<AnswerDTO>answers = new ArrayList<>();
 
 
-    private int numberOfQuestions = 9;
+    private int numberOfQuestions = 5;
+    private int questionId;
+    private int index;
     private int randQuestionId;
+    private int answerIndex;
+    private int answerId;
+    private String rightAnswer;
+
+    private AnswerDTO selectedAnswer;
+
     private ArrayList<Integer>avaiable = new ArrayList<>();
     private Random random;
+    private RadioButton answersOptions;
+    private RadioButton radioButton;
+    private RadioGroup group;
 
     public SingleplayerActivity(){
-        random = new Random();
-        for(int i=0; i<numberOfQuestions;i++){
-            avaiable.add(i);
-        }
+
     }
 
     @Override
@@ -109,6 +122,8 @@ public class SingleplayerActivity extends AppCompatActivity {
             }
         });
 
+        setRandomList();
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -120,29 +135,73 @@ public class SingleplayerActivity extends AppCompatActivity {
         });
     }
 
+
+
     public void getQuestion() {
         try {
             questions = new ArrayList<>(dbAdapter.getAllQuestions());
-            final TextView questionField = (TextView) findViewById(R.id.txt_question);
-            int randQuestionId = random.nextInt(avaiable.size());
-            questionField.setText(questions.get(randQuestionId).getDescription());
-            avaiable.remove(randQuestionId);
+            questionId = getRandomQuestionId();
 
-            answers = new ArrayList<>(dbAdapter.getAllAnswersByQuestion(randQuestionId));
-            RadioGroup group = (RadioGroup) findViewById(R.id.rd_answers);
-            RadioButton answersOptions;
+            final TextView questionField = (TextView) findViewById(R.id.txt_question);
+            questionField.setText(questions.get(questionId).getDescription());
+
+            answers = new ArrayList<>(dbAdapter.getAllAnswersByQuestion(questionId));
+            group = (RadioGroup) findViewById(R.id.rd_answers);
+
             for(int i = 0; i < answers.size(); i++) {
                 answersOptions = new RadioButton(this);
                 answersOptions.setText(answers.get(i).getValue());
                 group.addView(answersOptions);
+                answersOptions.setId(i);
+                if (answers.get(i).isCorrect()){
+                    rightAnswer = answers.get(i).getValue();
+                }
             }
-
+            group.check(0);
         } catch (Exception e) {
             e.getStackTrace();
         }
     }
 
+    public void checkAnswer(){
+        TextView answer = (TextView)findViewById(R.id.txt_eval);
+        TextView infoText = (TextView)findViewById(R.id.txt_answer);
+        LinearLayout information = (LinearLayout)findViewById(R.id.ll_information);
 
+        boolean right;
+        answerIndex = group.getCheckedRadioButtonId();
+        right = answers.get(answerIndex).isCorrect();
+
+        if(right){
+            answer.setText("Ihre Antwort ist Richtig!");
+            information.setVisibility(View.INVISIBLE);
+        }
+        else {
+            answer.setText("Ihre Antwort ist Falsch!");
+            int qid = answers.get(answerIndex).getQid();
+            String info = questions.get(qid).getInformations();;
+            Linkify.addLinks(infoText, Linkify.WEB_URLS);
+            infoText.setMovementMethod(LinkMovementMethod.getInstance());
+            infoText.setText("Richtig wäre: " + rightAnswer + "\n\n" + "Weitere Informationen finden Sie unter: \n" + info);
+            Linkify.addLinks(infoText, Linkify.WEB_URLS);
+            infoText.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+
+
+    public int getRandomQuestionId() {
+        index = random.nextInt(avaiable.size());
+        randQuestionId = avaiable.get(index);
+        avaiable.remove(index);
+        return randQuestionId;
+    }
+
+    public void setRandomList(){
+        random = new Random();
+        for(int i=1; i<=numberOfQuestions;i++){
+            avaiable.add(i);
+        }
+    }
 
     public void setupQuestionActicity(){
         getQuestion();
@@ -158,8 +217,10 @@ public class SingleplayerActivity extends AppCompatActivity {
     }
 
 
+
     public void chooseAnswer(View view){
         setContentView(R.layout.activity_answer);
+        checkAnswer();
         countDownTimer.cancel();
 
     }
@@ -197,8 +258,8 @@ public class SingleplayerActivity extends AppCompatActivity {
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            setContentView(R.layout.activity_singleplayer_leveloverview);
-                            setLevelOverview();
+                            setContentView(R.layout.activity_answer);
+                            checkAnswer();
                         }
                     });
             alertDialog.show();

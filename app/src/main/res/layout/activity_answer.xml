@@ -31,7 +31,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:background="#99ffffff">
+            android:background="#99ffffff"
+            android:id="@+id/ll_information">
 
             <TextView
                 android:layout_width="wrap_content"
