@@ -145,7 +145,8 @@ public class DbAdapter {
 
     public List<QuestionDTO> getAllQuestionsByDifficulty(int difficulty){
         List<QuestionDTO> allQuestions = new ArrayList<>();
-        String selectQuery = "Select * from "+dbHelper.TABLE_QUESTION;
+        String selectQuery = "Select * from "+dbHelper.TABLE_QUESTION +" where "+
+                dbHelper.COLUMN_DIFFICULTY +" = "+difficulty;
         Cursor result = db.rawQuery(selectQuery, null);
         if(result!=null && result.getCount()>0) {
             result.moveToPosition(-1);
