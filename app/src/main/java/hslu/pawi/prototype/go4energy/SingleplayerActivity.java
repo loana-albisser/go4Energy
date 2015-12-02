@@ -8,7 +8,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.TypedValue;
@@ -29,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 import hslu.pawi.prototype.go4energy.database.DbAdapter;
 import hslu.pawi.prototype.go4energy.dto.AnswerDTO;
@@ -47,21 +45,20 @@ public class SingleplayerActivity extends AppCompatActivity {
     private ArrayList<QuestionDTO>questions = new ArrayList<>();
     private ArrayList<AnswerDTO>answers = new ArrayList<>();
 
+    private int difficulty;
 
     private int numberOfQuestions = 5;
     private int questionId;
     private int index;
     private int randQuestionId;
     private int answerIndex;
-    private int answerId;
     private String rightAnswer;
 
     private AnswerDTO selectedAnswer;
 
-    private ArrayList<Integer>avaiable = new ArrayList<>();
+    private ArrayList<Integer> available = new ArrayList<>();
     private Random random;
     private RadioButton answersOptions;
-    private RadioButton radioButton;
     private RadioGroup group;
 
     public SingleplayerActivity(){
@@ -127,8 +124,7 @@ public class SingleplayerActivity extends AppCompatActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItem = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(), selectedItem, Toast.LENGTH_LONG).show();
+                difficulty = Integer.parseInt(parent.getItemAtPosition(position).toString());
                 setContentView(R.layout.activity_question);
                 setupQuestionActicity();
             }
@@ -139,7 +135,7 @@ public class SingleplayerActivity extends AppCompatActivity {
 
     public void getQuestion() {
         try {
-            questions = new ArrayList<>(dbAdapter.getAllQuestions());
+            questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(difficulty));
             questionId = getRandomQuestionId();
 
             final TextView questionField = (TextView) findViewById(R.id.txt_question);
@@ -190,16 +186,16 @@ public class SingleplayerActivity extends AppCompatActivity {
 
 
     public int getRandomQuestionId() {
-        index = random.nextInt(avaiable.size());
-        randQuestionId = avaiable.get(index);
-        avaiable.remove(index);
+        index = random.nextInt(available.size());
+        randQuestionId = available.get(index);
+        available.remove(index);
         return randQuestionId;
     }
 
     public void setRandomList(){
         random = new Random();
         for(int i=1; i<=numberOfQuestions;i++){
-            avaiable.add(i);
+            available.add(i);
         }
     }
 
@@ -207,6 +203,7 @@ public class SingleplayerActivity extends AppCompatActivity {
         getQuestion();
         countDownTimer = new MyCountDownTimer(10000, 1000);
         countDownTimer.start();
+
     }
 
     // Method for converting DP value to pixels
@@ -216,13 +213,10 @@ public class SingleplayerActivity extends AppCompatActivity {
                 TypedValue.COMPLEX_UNIT_DIP, 75, r.getDisplayMetrics()));
     }
 
-
-
     public void chooseAnswer(View view){
         setContentView(R.layout.activity_answer);
         checkAnswer();
         countDownTimer.cancel();
-
     }
 
     public void nextQuestion(View view){
