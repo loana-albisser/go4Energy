@@ -37,10 +37,19 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Weitere Informationen zur Frage"
                 android:id="@+id/txt_answer"
-                android:layout_margin="10dp"
-                android:textSize="20sp" />
+                android:layout_margin="5dp"
+                android:textSize="20sp"
+                android:layout_gravity="top" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView"
+                android:layout_gravity="center"
+                android:layout_margin="20dp"
+                android:contentDescription="@string/pic_thumbup" />
+
         </LinearLayout>
     </LinearLayout>
 

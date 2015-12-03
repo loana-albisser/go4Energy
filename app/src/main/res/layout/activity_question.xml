@@ -45,13 +45,13 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="wrap_content"
             android:background="#99ffffff"
             android:layout_margin="10dp">
 
             <RadioGroup
                 android:layout_width="match_parent"
-                android:layout_height="161dp"
+                android:layout_height="wrap_content"
                 android:id="@+id/rd_answers"
                 android:layout_margin="10dp">
 

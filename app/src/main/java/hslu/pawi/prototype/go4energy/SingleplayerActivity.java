@@ -16,13 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +37,7 @@ import hslu.pawi.prototype.go4energy.dto.QuestionDTO;
 /**
  * Created by Loana on 13.11.2015.
  */
+@SuppressWarnings("deprecation")
 public class SingleplayerActivity extends AppCompatActivity {
 
     private CountDownTimer countDownTimer;
@@ -46,19 +47,13 @@ public class SingleplayerActivity extends AppCompatActivity {
     private ArrayList<AnswerDTO>answers = new ArrayList<>();
 
     private int difficulty;
-
-    private int numberOfQuestions = 5;
-    private int questionId;
-    private int index;
+    private int currentQuestion;
+    private int numberOfRightAnswers;
+    private int questionIndex;
     private int randQuestionId;
-    private int answerIndex;
+
     private String rightAnswer;
 
-    private AnswerDTO selectedAnswer;
-
-    private ArrayList<Integer> available = new ArrayList<>();
-    private Random random;
-    private RadioButton answersOptions;
     private RadioGroup group;
 
     public SingleplayerActivity(){
@@ -68,18 +63,20 @@ public class SingleplayerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         this.deleteDatabase(DbAdapter.DB_NAME);
         dbAdapter = new DbAdapter(getApplicationContext());
         dbAdapter.open();
+
         setContentView(R.layout.activity_singleplayer_leveloverview);
-        setLevelOverview();
+        setupLevelOverview();
     }
 
     @Override
     protected void onRestart(){
         super.onRestart();
         setContentView(R.layout.activity_singleplayer_leveloverview);
-        setLevelOverview();
+        setupLevelOverview();
     }
 
     @Override
@@ -88,10 +85,13 @@ public class SingleplayerActivity extends AppCompatActivity {
         countDownTimer.cancel();
     }
 
-    public void setLevelOverview(){
+    /**
+     * Creates level overview activity
+     */
+    private void setupLevelOverview(){
         GridView gridView = (GridView) findViewById(R.id.gridView);
         String[] levelNumber = new String[]{"1", "2","3","4","5","7","8","9","10","11","12","13" };
-        final List<String> levelList = new ArrayList(Arrays.asList(levelNumber));
+        final List<String> levelList = new ArrayList<>(Arrays.asList(levelNumber));
 
         gridView.setAdapter(new ArrayAdapter<String>(
                 this, android.R.layout.simple_list_item_1, levelList) {
@@ -119,33 +119,35 @@ public class SingleplayerActivity extends AppCompatActivity {
             }
         });
 
-        setRandomList();
+
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 difficulty = Integer.parseInt(parent.getItemAtPosition(position).toString());
+                questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(difficulty-1));
                 setContentView(R.layout.activity_question);
+                numberOfRightAnswers = 0;
+                currentQuestion = 0;
                 setupQuestionActicity();
             }
         });
     }
 
-
-
-    public void getQuestion() {
+    /**
+     * setup question for selected level
+     */
+    private void getQuestion() {
         try {
-            questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(difficulty));
-            questionId = getRandomQuestionId();
-
+            getRandomQuestionId();
             final TextView questionField = (TextView) findViewById(R.id.txt_question);
-            questionField.setText(questions.get(questionId).getDescription());
+            questionField.setText(questions.get(questionIndex).getDescription());
+            answers = new ArrayList<>(dbAdapter.getAllAnswersByQuestion(randQuestionId));
 
-            answers = new ArrayList<>(dbAdapter.getAllAnswersByQuestion(questionId));
             group = (RadioGroup) findViewById(R.id.rd_answers);
 
             for(int i = 0; i < answers.size(); i++) {
-                answersOptions = new RadioButton(this);
+                RadioButton answersOptions = new RadioButton(this);
                 answersOptions.setText(answers.get(i).getValue());
                 group.addView(answersOptions);
                 answersOptions.setId(i);
@@ -159,54 +161,116 @@ public class SingleplayerActivity extends AppCompatActivity {
         }
     }
 
-    public void checkAnswer(){
+    /**
+     * checks whether the answer is right or wrong
+     */
+    private void checkAnswer(){
         TextView answer = (TextView)findViewById(R.id.txt_eval);
         TextView infoText = (TextView)findViewById(R.id.txt_answer);
-        LinearLayout information = (LinearLayout)findViewById(R.id.ll_information);
+        ImageView imageView = (ImageView)findViewById(R.id.imageView);
 
         boolean right;
-        answerIndex = group.getCheckedRadioButtonId();
+        int answerIndex = group.getCheckedRadioButtonId();
         right = answers.get(answerIndex).isCorrect();
 
         if(right){
             answer.setText("Ihre Antwort ist Richtig!");
-            information.setVisibility(View.INVISIBLE);
+            numberOfRightAnswers ++;
+            questions.remove(questionIndex);
+            infoText.setVisibility(View.INVISIBLE);
+            imageView.setImageResource(R.drawable.thumbup);
+
         }
         else {
             answer.setText("Ihre Antwort ist Falsch!");
-            int qid = answers.get(answerIndex).getQid();
-            String info = questions.get(qid).getInformations();;
+            imageView.setVisibility(View.INVISIBLE);
+            String info = questions.get(questionIndex).getInformations();
             Linkify.addLinks(infoText, Linkify.WEB_URLS);
             infoText.setMovementMethod(LinkMovementMethod.getInstance());
             infoText.setText("Richtig wäre: " + rightAnswer + "\n\n" + "Weitere Informationen finden Sie unter: \n" + info);
             Linkify.addLinks(infoText, Linkify.WEB_URLS);
             infoText.setMovementMethod(LinkMovementMethod.getInstance());
+            questions.remove(questionIndex);
+        }
+        int numberOfQuestions = 3;
+        if (currentQuestion == numberOfQuestions){
+            finishLevel();
+        }
+
+    }
+
+
+    private void finishLevel(){
+        final Button button = (Button)findViewById(R.id.btn_next);
+        if (numberOfRightAnswers >= (int)(3*0.75)){
+            finishLevelDialog("Super!","Sie das Level geschafft!");
+            button.setText("Nächstes Level");
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    difficulty ++;
+                    resetQuestionActivity();
+                }
+            });
+        }
+        else {
+            finishLevelDialog("Probieren Sie es nocheinmal!","Sie haben das Level leider nicht geschafft!");
+            button.setText("Level nocheinmal spielen");
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    resetQuestionActivity();
+                }
+            });
         }
     }
 
-
-    public int getRandomQuestionId() {
-        index = random.nextInt(available.size());
-        randQuestionId = available.get(index);
-        available.remove(index);
-        return randQuestionId;
+    /**
+     * Shows up when level is finished
+     * @param title title of the alert dialog
+     * @param message message of the alert dialog
+     */
+    private void finishLevelDialog(String title, String message){
+        AlertDialog alertDialog = new AlertDialog.Builder(SingleplayerActivity.this).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(message);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
-    public void setRandomList(){
-        random = new Random();
-        for(int i=1; i<=numberOfQuestions;i++){
-            available.add(i);
-        }
+    private void resetQuestionActivity(){
+        questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(difficulty-1));
+        setContentView(R.layout.activity_question);
+        currentQuestion = 0;
+        numberOfRightAnswers = 0;
+        setupQuestionActicity();
     }
 
-    public void setupQuestionActicity(){
+
+    /**
+     * gets a random question id by level
+     */
+    private void getRandomQuestionId() {
+        Random random = new Random();
+        questionIndex = random.nextInt(questions.size());
+        randQuestionId = questions.get(questionIndex).getId();
+    }
+
+    private void setupQuestionActicity(){
         getQuestion();
+        currentQuestion ++;
         countDownTimer = new MyCountDownTimer(10000, 1000);
         countDownTimer.start();
-
     }
 
-    // Method for converting DP value to pixels
+    /**
+     * Method for converting DP value to pixels
+     */
     private static int getPixelsFromDPs(Activity activity){
         Resources r = activity.getResources();
         return (int) (TypedValue.applyDimension(
@@ -219,7 +283,7 @@ public class SingleplayerActivity extends AppCompatActivity {
         countDownTimer.cancel();
     }
 
-    public void nextQuestion(View view){
+    public void nextQuestion(View view) {
         setContentView(R.layout.activity_question);
         setupQuestionActicity();
     }

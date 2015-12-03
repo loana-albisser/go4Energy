@@ -18,6 +18,8 @@
     <string name="rd_answer4">Gaskraftwerke</string>
     <string name="txt_eval">Ihre Antwort ist RICHTIG</string>
     <string name="counter">Verbleibende Zeit:</string>
+    <string name="txt_chooseLevel">Bitte wählen Sie ein Level aus:</string>
+    <string name="pic_thumbup">thumbup</string>
 
 
 </resources>
