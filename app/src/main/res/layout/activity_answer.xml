@@ -26,12 +26,20 @@
             android:textStyle="bold"
             android:layout_margin="10dp" />
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:layout_gravity="center"
+            android:contentDescription="@string/pic_thumbup"
+            android:visibility="gone" />
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:background="#99ffffff"
+            android:background="@drawable/bg_light"
             android:id="@+id/ll_information">
 
             <TextView
@@ -39,16 +47,9 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/txt_answer"
                 android:layout_margin="5dp"
-                android:textSize="20sp"
-                android:layout_gravity="top" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView"
-                android:layout_gravity="center"
-                android:layout_margin="20dp"
-                android:contentDescription="@string/pic_thumbup" />
+                android:textSize="16sp"
+                android:layout_gravity="top"
+                android:textColor="#000000" />
 
         </LinearLayout>
     </LinearLayout>

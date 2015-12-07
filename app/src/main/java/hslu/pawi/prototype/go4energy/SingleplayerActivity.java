@@ -3,10 +3,12 @@ package hslu.pawi.prototype.go4energy;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -19,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -37,7 +40,6 @@ import hslu.pawi.prototype.go4energy.dto.QuestionDTO;
 /**
  * Created by Loana on 13.11.2015.
  */
-@SuppressWarnings("deprecation")
 public class SingleplayerActivity extends AppCompatActivity {
 
     private CountDownTimer countDownTimer;
@@ -95,37 +97,35 @@ public class SingleplayerActivity extends AppCompatActivity {
 
         gridView.setAdapter(new ArrayAdapter<String>(
                 this, android.R.layout.simple_list_item_1, levelList) {
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView textView = (TextView) view;
-                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-                );
-                textView.setLayoutParams(layoutParams);
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) textView.getLayoutParams();
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        View view = super.getView(position, convertView, parent);
+                        TextView textView = (TextView) view;
+                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+                        );
+                        textView.setLayoutParams(layoutParams);
+                        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) textView.getLayoutParams();
 
-                // Set the width/height of GridView Item
-                params.width = getPixelsFromDPs(SingleplayerActivity.this);
-                params.height = getPixelsFromDPs(SingleplayerActivity.this);
+                        // Set the width/height of GridView Item
+                        params.width = getPixelsFromDPs(SingleplayerActivity.this);
+                        params.height = getPixelsFromDPs(SingleplayerActivity.this);
 
-                textView.setLayoutParams(params);
-                textView.setGravity(Gravity.CENTER);
-                textView.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25);
-                textView.setText(levelList.get(position));
-                textView.setBackground(getResources().getDrawable(R.drawable.button));
+                        textView.setLayoutParams(params);
+                        textView.setGravity(Gravity.CENTER);
+                        textView.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
+                        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25);
+                        textView.setText(levelList.get(position));
+                        textView.setBackground(getResources().getDrawable(R.drawable.button));
 
-                return textView;
-            }
+                        return textView;
+                    }
         });
-
-
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 difficulty = Integer.parseInt(parent.getItemAtPosition(position).toString());
-                questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(difficulty-1));
+                questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(difficulty - 1));
                 setContentView(R.layout.activity_question);
                 numberOfRightAnswers = 0;
                 currentQuestion = 0;
@@ -168,6 +168,7 @@ public class SingleplayerActivity extends AppCompatActivity {
         TextView answer = (TextView)findViewById(R.id.txt_eval);
         TextView infoText = (TextView)findViewById(R.id.txt_answer);
         ImageView imageView = (ImageView)findViewById(R.id.imageView);
+        LinearLayout ll_information =(LinearLayout)findViewById(R.id.ll_information);
 
         boolean right;
         int answerIndex = group.getCheckedRadioButtonId();
@@ -176,8 +177,9 @@ public class SingleplayerActivity extends AppCompatActivity {
         if(right){
             answer.setText("Ihre Antwort ist Richtig!");
             numberOfRightAnswers ++;
-            questions.remove(questionIndex);
-            infoText.setVisibility(View.INVISIBLE);
+            ll_information.setVisibility(View.INVISIBLE);
+            //infoText.setVisibility(View.INVISIBLE);
+            imageView.setVisibility(View.VISIBLE);
             imageView.setImageResource(R.drawable.thumbup);
 
         }
@@ -190,8 +192,9 @@ public class SingleplayerActivity extends AppCompatActivity {
             infoText.setText("Richtig wäre: " + rightAnswer + "\n\n" + "Weitere Informationen finden Sie unter: \n" + info);
             Linkify.addLinks(infoText, Linkify.WEB_URLS);
             infoText.setMovementMethod(LinkMovementMethod.getInstance());
-            questions.remove(questionIndex);
+
         }
+        questions.remove(questionIndex);
         int numberOfQuestions = 3;
         if (currentQuestion == numberOfQuestions){
             finishLevel();
@@ -250,7 +253,6 @@ public class SingleplayerActivity extends AppCompatActivity {
         numberOfRightAnswers = 0;
         setupQuestionActicity();
     }
-
 
     /**
      * gets a random question id by level
