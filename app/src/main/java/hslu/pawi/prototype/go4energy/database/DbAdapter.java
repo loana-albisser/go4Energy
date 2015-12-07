@@ -179,5 +179,18 @@ public class DbAdapter {
         }
         return questionDTO;
     }
+
+    public int getQuestionAmountByDifficulty(int difficulty){
+        int amount = 0;
+
+        String selectQuery = "Select Count(*) from "+dbHelper.TABLE_QUESTION +" where "+
+                dbHelper.COLUMN_DIFFICULTY +" = "+difficulty;
+        Cursor result = db.rawQuery(selectQuery, null);
+        result.moveToFirst();
+        amount = result.getInt(0);
+        result.close();
+
+        return amount;
+    }
 }
 

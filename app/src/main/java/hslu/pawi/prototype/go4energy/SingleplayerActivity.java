@@ -5,9 +5,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
@@ -27,6 +29,7 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,8 +51,10 @@ public class SingleplayerActivity extends AppCompatActivity {
     private ArrayList<QuestionDTO>questions = new ArrayList<>();
     private ArrayList<AnswerDTO>answers = new ArrayList<>();
 
-    private int difficulty;
+    private String difficultKey = "pDifficulty";
+
     private int currentQuestion;
+    int numberOfQuestions = 3;
     private int numberOfRightAnswers;
     private int questionIndex;
     private int randQuestionId;
@@ -71,11 +76,39 @@ public class SingleplayerActivity extends AppCompatActivity {
         dbAdapter.open();
 
         setContentView(R.layout.activity_singleplayer_leveloverview);
+        GeneratePrivatePreferences();
         setupLevelOverview();
     }
 
+    private void GeneratePrivatePreferences() {
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if(mPrefs.getAll()== null || mPrefs.getAll().size()==0)
+        {
+            SharedPreferences.Editor editor = mPrefs.edit();
+            editor.putInt(difficultKey,0);
+            editor.commit();
+        }
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putInt(difficultKey,0);
+        editor.commit();
+    }
+
+    private int getDifficulty(){
+        return PreferenceManager.getDefaultSharedPreferences(
+                getApplicationContext()).getInt(difficultKey, 0);
+    }
+
+    private void setDifficulty(int difficulty){
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if(mPrefs.getAll()== null || mPrefs.getAll().size()==0)
+        {
+            SharedPreferences.Editor editor = mPrefs.edit();
+            editor.putInt(difficultKey, difficulty);
+            editor.commit();
+        }
+    }
     @Override
-    protected void onRestart(){
+    protected void onRestart() {
         super.onRestart();
         setContentView(R.layout.activity_singleplayer_leveloverview);
         setupLevelOverview();
@@ -116,6 +149,15 @@ public class SingleplayerActivity extends AppCompatActivity {
                         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25);
                         textView.setText(levelList.get(position));
                         textView.setBackground(getResources().getDrawable(R.drawable.button));
+                        if(getDifficulty()==position) {
+                            textView.setBackgroundColor(Color.YELLOW);
+                        }
+                        else if(getDifficulty()< position) {
+                            textView.setBackgroundColor(Color.RED);
+                        }else{
+                            textView.setBackgroundColor(Color.WHITE);
+                        }
+
 
                         return textView;
                     }
@@ -124,12 +166,22 @@ public class SingleplayerActivity extends AppCompatActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                difficulty = Integer.parseInt(parent.getItemAtPosition(position).toString());
-                questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(difficulty - 1));
-                setContentView(R.layout.activity_question);
-                numberOfRightAnswers = 0;
-                currentQuestion = 0;
-                setupQuestionActicity();
+
+                if(position<getDifficulty()+1) {
+                    questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(position));
+                    setContentView(R.layout.activity_question);
+                    numberOfRightAnswers = 0;
+                    currentQuestion = 0;
+                    setupQuestionActicity();
+                }
+                else{
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(SingleplayerActivity.this);
+                    alertDialog.setTitle("Ungültig!");
+                    alertDialog.setMessage("Dieses Level ist noch nicht verfügbar!");
+
+                    alertDialog.setPositiveButton("OK", null);
+                    alertDialog.show();
+                }
             }
         });
     }
@@ -155,7 +207,9 @@ public class SingleplayerActivity extends AppCompatActivity {
                     rightAnswer = answers.get(i).getValue();
                 }
             }
-            group.check(0);
+            //nohting should be selected firsthand
+            //group.check(0);
+
         } catch (Exception e) {
             e.getStackTrace();
         }
@@ -170,9 +224,11 @@ public class SingleplayerActivity extends AppCompatActivity {
         ImageView imageView = (ImageView)findViewById(R.id.imageView);
         LinearLayout ll_information =(LinearLayout)findViewById(R.id.ll_information);
 
-        boolean right;
+        boolean right=false;
         int answerIndex = group.getCheckedRadioButtonId();
-        right = answers.get(answerIndex).isCorrect();
+        if(answerIndex>=0) {
+            right = answers.get(answerIndex).isCorrect();
+        }
 
         if(right){
             answer.setText("Ihre Antwort ist Richtig!");
@@ -195,8 +251,8 @@ public class SingleplayerActivity extends AppCompatActivity {
 
         }
         questions.remove(questionIndex);
-        int numberOfQuestions = 3;
-        if (currentQuestion == numberOfQuestions){
+
+        if (currentQuestion == dbAdapter.getQuestionAmountByDifficulty(getDifficulty())){
             finishLevel();
         }
 
@@ -211,7 +267,7 @@ public class SingleplayerActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    difficulty ++;
+                    setDifficulty(getDifficulty()+1);
                     resetQuestionActivity();
                 }
             });
@@ -247,7 +303,7 @@ public class SingleplayerActivity extends AppCompatActivity {
     }
 
     private void resetQuestionActivity(){
-        questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(difficulty-1));
+        questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(getDifficulty()-1));
         setContentView(R.layout.activity_question);
         currentQuestion = 0;
         numberOfRightAnswers = 0;
