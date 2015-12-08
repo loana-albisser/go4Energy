@@ -100,12 +100,10 @@ public class SingleplayerActivity extends AppCompatActivity {
 
     private void setDifficulty(int difficulty){
         SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if(mPrefs.getAll()== null || mPrefs.getAll().size()==0)
-        {
-            SharedPreferences.Editor editor = mPrefs.edit();
-            editor.putInt(difficultKey, difficulty);
-            editor.commit();
-        }
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putInt(difficultKey, difficulty);
+        editor.commit();
+
     }
     @Override
     protected void onRestart() {
