@@ -262,12 +262,13 @@ public class SingleplayerActivity extends AppCompatActivity {
     private void finishLevel(){
         final Button button = (Button)findViewById(R.id.btn_next);
         if (numberOfRightAnswers >= (int)(3*0.75)){
-            finishLevelDialog("Super!","Sie das Level geschafft!");
+            finishLevelDialog("Super!","Sie haben das Level geschafft!");
             button.setText("Nächstes Level");
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setDifficulty(getDifficulty()+1);
+                    int difficulty = getDifficulty()+1;
+                    setDifficulty(difficulty);
                     resetQuestionActivity();
                 }
             });
@@ -303,7 +304,7 @@ public class SingleplayerActivity extends AppCompatActivity {
     }
 
     private void resetQuestionActivity(){
-        questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(getDifficulty()-1));
+        questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(getDifficulty()));
         setContentView(R.layout.activity_question);
         currentQuestion = 0;
         numberOfRightAnswers = 0;
