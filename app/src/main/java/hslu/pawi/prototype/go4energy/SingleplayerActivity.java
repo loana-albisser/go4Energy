@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.Preference;
@@ -89,7 +90,7 @@ public class SingleplayerActivity extends AppCompatActivity {
             editor.commit();
         }
         SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putInt(difficultKey,0);
+        editor.putInt(difficultKey, 0);
         editor.commit();
     }
 
@@ -128,51 +129,47 @@ public class SingleplayerActivity extends AppCompatActivity {
 
         gridView.setAdapter(new ArrayAdapter<String>(
                 this, android.R.layout.simple_list_item_1, levelList) {
-                    public View getView(int position, View convertView, ViewGroup parent) {
-                        View view = super.getView(position, convertView, parent);
-                        TextView textView = (TextView) view;
-                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-                        );
-                        textView.setLayoutParams(layoutParams);
-                        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) textView.getLayoutParams();
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView) view;
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+                );
+                textView.setLayoutParams(layoutParams);
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) textView.getLayoutParams();
 
-                        // Set the width/height of GridView Item
-                        params.width = getPixelsFromDPs(SingleplayerActivity.this);
-                        params.height = getPixelsFromDPs(SingleplayerActivity.this);
+                // Set the width/height of GridView Item
+                params.width = getPixelsFromDPs(SingleplayerActivity.this);
+                params.height = getPixelsFromDPs(SingleplayerActivity.this);
 
-                        textView.setLayoutParams(params);
-                        textView.setGravity(Gravity.CENTER);
-                        textView.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25);
-                        textView.setText(levelList.get(position));
-                        textView.setBackground(getResources().getDrawable(R.drawable.button));
-                        if(getDifficulty()==position) {
-                            textView.setBackgroundColor(Color.YELLOW);
-                        }
-                        else if(getDifficulty()< position) {
-                            textView.setBackgroundColor(Color.RED);
-                        }else{
-                            textView.setBackgroundColor(Color.WHITE);
-                        }
-
-
-                        return textView;
-                    }
+                textView.setLayoutParams(params);
+                textView.setGravity(Gravity.CENTER);
+                textView.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25);
+                textView.setText(levelList.get(position));
+                textView.setBackground(getResources().getDrawable(R.drawable.button));
+                if (getDifficulty() == position) {
+                    textView.setBackgroundColor(Color.YELLOW);
+                } else if (getDifficulty() < position) {
+                    textView.setBackgroundColor(Color.RED);
+                } else {
+                    textView.setBackgroundColor(Color.WHITE);
+                }
+                return textView;
+            }
         });
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if(position<getDifficulty()+1) {
+                if (position < getDifficulty() + 1) {
                     questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(position));
                     setContentView(R.layout.activity_question);
                     numberOfRightAnswers = 0;
                     currentQuestion = 0;
                     setupQuestionActicity();
-                }
-                else{
+                } else {
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(SingleplayerActivity.this);
                     alertDialog.setTitle("Ungültig!");
                     alertDialog.setMessage("Dieses Level ist noch nicht verfügbar!");
@@ -217,10 +214,13 @@ public class SingleplayerActivity extends AppCompatActivity {
      * checks whether the answer is right or wrong
      */
     private void checkAnswer(){
+        final RelativeLayout relLayout = (RelativeLayout) findViewById(R.id.relLayout);
         TextView answer = (TextView)findViewById(R.id.txt_eval);
         TextView infoText = (TextView)findViewById(R.id.txt_answer);
         ImageView imageView = (ImageView)findViewById(R.id.imageView);
+        Button button = (Button)findViewById(R.id.btn_next);
         LinearLayout ll_information =(LinearLayout)findViewById(R.id.ll_information);
+
 
         boolean right=false;
         int answerIndex = group.getCheckedRadioButtonId();
@@ -258,18 +258,47 @@ public class SingleplayerActivity extends AppCompatActivity {
 
 
     private void finishLevel(){
+        final RelativeLayout relLayout = (RelativeLayout) findViewById(R.id.relLayout);
         final Button button = (Button)findViewById(R.id.btn_next);
+        Button buttonBack = new Button(this);
+        float scale =  getResources().getDisplayMetrics().density;
+        int dpWidth = (int)(160*scale);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                dpWidth,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        );
+        buttonBack.setText("Zur Übersicht");
+        buttonBack.setBackgroundResource(R.drawable.button);
+        relLayout.addView(buttonBack);
+        buttonBack.setLayoutParams(params);
+        params.setMargins(20, 20, 20, 20);
+
+        params.addRule(RelativeLayout.ABOVE, button.getId());
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params.addRule(RelativeLayout.ALIGN_LEFT);
+
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setContentView(R.layout.activity_singleplayer_leveloverview);
+                setupLevelOverview();
+            }
+        });
+
+
         if (numberOfRightAnswers >= (int)(3*0.75)){
-            finishLevelDialog("Super!","Sie haben das Level geschafft!");
+
+            finishLevelDialog("Super!", "Sie haben das Level geschafft!");
             button.setText("Nächstes Level");
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int difficulty = getDifficulty()+1;
+                    int difficulty = getDifficulty() + 1;
                     setDifficulty(difficulty);
                     resetQuestionActivity();
                 }
             });
+
         }
         else {
             finishLevelDialog("Probieren Sie es nocheinmal!","Sie haben das Level leider nicht geschafft!");
@@ -281,7 +310,10 @@ public class SingleplayerActivity extends AppCompatActivity {
                 }
             });
         }
+
+
     }
+
 
     /**
      * Shows up when level is finished
@@ -344,7 +376,6 @@ public class SingleplayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_question);
         setupQuestionActicity();
     }
-
 
     private class MyCountDownTimer extends CountDownTimer {
         final TextView counter = (TextView) findViewById(R.id.counter);
