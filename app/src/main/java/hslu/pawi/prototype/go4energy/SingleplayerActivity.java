@@ -220,7 +220,9 @@ public class SingleplayerActivity extends AppCompatActivity {
         ImageView imageView = (ImageView)findViewById(R.id.imageView);
         Button button = (Button)findViewById(R.id.btn_next);
         LinearLayout ll_information =(LinearLayout)findViewById(R.id.ll_information);
-
+        ViewGroup.LayoutParams params2 = button.getLayoutParams();
+        params2.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+        button.setLayoutParams(params2);
 
         boolean right=false;
         int answerIndex = group.getCheckedRadioButtonId();
@@ -276,6 +278,10 @@ public class SingleplayerActivity extends AppCompatActivity {
         params.addRule(RelativeLayout.ABOVE, button.getId());
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         params.addRule(RelativeLayout.ALIGN_LEFT);
+
+        ViewGroup.LayoutParams params2 = button.getLayoutParams();
+        params2.width = dpWidth;
+        button.setLayoutParams(params2);
 
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
