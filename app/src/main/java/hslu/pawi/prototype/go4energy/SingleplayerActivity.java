@@ -7,10 +7,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
@@ -30,7 +28,6 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,10 +49,9 @@ public class SingleplayerActivity extends AppCompatActivity {
     private ArrayList<QuestionDTO>questions = new ArrayList<>();
     private ArrayList<AnswerDTO>answers = new ArrayList<>();
 
-    private String difficultKey = "pDifficulty";
+    private final String difficultKey = "pDifficulty";
 
     private int currentQuestion;
-    int numberOfQuestions = 3;
     private int numberOfRightAnswers;
     private int questionIndex;
     private int randQuestionId;
@@ -63,10 +59,6 @@ public class SingleplayerActivity extends AppCompatActivity {
     private String rightAnswer;
 
     private RadioGroup group;
-
-    public SingleplayerActivity(){
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,31 +73,6 @@ public class SingleplayerActivity extends AppCompatActivity {
         setupLevelOverview();
     }
 
-    private void GeneratePrivatePreferences() {
-        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if(mPrefs.getAll()== null || mPrefs.getAll().size()==0)
-        {
-            SharedPreferences.Editor editor = mPrefs.edit();
-            editor.putInt(difficultKey,0);
-            editor.commit();
-        }
-        SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putInt(difficultKey, 0);
-        editor.commit();
-    }
-
-    private int getDifficulty(){
-        return PreferenceManager.getDefaultSharedPreferences(
-                getApplicationContext()).getInt(difficultKey, 0);
-    }
-
-    private void setDifficulty(int difficulty){
-        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putInt(difficultKey, difficulty);
-        editor.commit();
-
-    }
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -117,6 +84,43 @@ public class SingleplayerActivity extends AppCompatActivity {
     protected void onStop(){
         super.onStop();
         countDownTimer.cancel();
+    }
+
+    public void chooseAnswer(View view){
+        setContentView(R.layout.activity_answer);
+        checkAnswer();
+        countDownTimer.cancel();
+    }
+
+    public void nextQuestion(View view) {
+        setContentView(R.layout.activity_question);
+        setupQuestionActicity();
+    }
+
+    private void GeneratePrivatePreferences() {
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if(mPrefs.getAll()== null || mPrefs.getAll().size()==0)
+        {
+            SharedPreferences.Editor editor = mPrefs.edit();
+            editor.putInt(difficultKey,0);
+            editor.apply();
+        }
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putInt(difficultKey, 0);
+        editor.apply();
+    }
+
+    private int getDifficulty(){
+        return PreferenceManager.getDefaultSharedPreferences(
+                getApplicationContext()).getInt(difficultKey, 0);
+    }
+
+    private void setDifficulty(int difficulty){
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putInt(difficultKey, difficulty);
+        editor.apply();
+
     }
 
     /**
@@ -182,6 +186,31 @@ public class SingleplayerActivity extends AppCompatActivity {
     }
 
     /**
+     * Method for converting DP value to pixels
+     */
+    private static int getPixelsFromDPs(Activity activity){
+        Resources r = activity.getResources();
+        return (int) (TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 75, r.getDisplayMetrics()));
+    }
+
+    private void setupQuestionActicity(){
+        getQuestion();
+        currentQuestion ++;
+        countDownTimer = new MyCountDownTimer(10000, 1000);
+        countDownTimer.start();
+    }
+
+    /**
+     * gets a random question id by level
+     */
+    private void getRandomQuestionId() {
+        Random random = new Random();
+        questionIndex = random.nextInt(questions.size());
+        randQuestionId = questions.get(questionIndex).getId();
+    }
+
+    /**
      * setup question for selected level
      */
     private void getQuestion() {
@@ -202,24 +231,29 @@ public class SingleplayerActivity extends AppCompatActivity {
                     rightAnswer = answers.get(i).getValue();
                 }
             }
-            //nohting should be selected firsthand
-            //group.check(0);
-
         } catch (Exception e) {
             e.getStackTrace();
         }
+    }
+
+    private void resetQuestionActivity(){
+        questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(getDifficulty()));
+        setContentView(R.layout.activity_question);
+        currentQuestion = 0;
+        numberOfRightAnswers = 0;
+        setupQuestionActicity();
     }
 
     /**
      * checks whether the answer is right or wrong
      */
     private void checkAnswer(){
-        final RelativeLayout relLayout = (RelativeLayout) findViewById(R.id.relLayout);
         TextView answer = (TextView)findViewById(R.id.txt_eval);
         TextView infoText = (TextView)findViewById(R.id.txt_answer);
         ImageView imageView = (ImageView)findViewById(R.id.imageView);
         Button button = (Button)findViewById(R.id.btn_next);
         LinearLayout ll_information =(LinearLayout)findViewById(R.id.ll_information);
+        //set Button Layout
         ViewGroup.LayoutParams params2 = button.getLayoutParams();
         params2.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         button.setLayoutParams(params2);
@@ -229,17 +263,14 @@ public class SingleplayerActivity extends AppCompatActivity {
         if(answerIndex>=0) {
             right = answers.get(answerIndex).isCorrect();
         }
-
         if(right){
             answer.setText("Ihre Antwort ist Richtig!");
             numberOfRightAnswers ++;
             ll_information.setVisibility(View.INVISIBLE);
-            //infoText.setVisibility(View.INVISIBLE);
             imageView.setVisibility(View.VISIBLE);
             imageView.setImageResource(R.drawable.thumbup);
 
-        }
-        else {
+        } else {
             answer.setText("Ihre Antwort ist Falsch!");
             imageView.setVisibility(View.INVISIBLE);
             String info = questions.get(questionIndex).getInformations();
@@ -251,17 +282,15 @@ public class SingleplayerActivity extends AppCompatActivity {
 
         }
         questions.remove(questionIndex);
-
         if (currentQuestion == dbAdapter.getQuestionAmountByDifficulty(getDifficulty())){
             finishLevel();
         }
-
     }
-
 
     private void finishLevel(){
         final RelativeLayout relLayout = (RelativeLayout) findViewById(R.id.relLayout);
         final Button button = (Button)findViewById(R.id.btn_next);
+        //add BackToOverview Button
         Button buttonBack = new Button(this);
         float scale =  getResources().getDisplayMetrics().density;
         int dpWidth = (int)(160*scale);
@@ -273,12 +302,11 @@ public class SingleplayerActivity extends AppCompatActivity {
         buttonBack.setBackgroundResource(R.drawable.button);
         relLayout.addView(buttonBack);
         buttonBack.setLayoutParams(params);
+        //Set Button Layout
         params.setMargins(20, 20, 20, 20);
-
         params.addRule(RelativeLayout.ABOVE, button.getId());
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         params.addRule(RelativeLayout.ALIGN_LEFT);
-
         ViewGroup.LayoutParams params2 = button.getLayoutParams();
         params2.width = dpWidth;
         button.setLayoutParams(params2);
@@ -290,10 +318,7 @@ public class SingleplayerActivity extends AppCompatActivity {
                 setupLevelOverview();
             }
         });
-
-
         if (numberOfRightAnswers >= (int)(3*0.75)){
-
             finishLevelDialog("Super!", "Sie haben das Level geschafft!");
             button.setText("Nächstes Level");
             button.setOnClickListener(new View.OnClickListener() {
@@ -304,9 +329,7 @@ public class SingleplayerActivity extends AppCompatActivity {
                     resetQuestionActivity();
                 }
             });
-
-        }
-        else {
+        } else {
             finishLevelDialog("Probieren Sie es nocheinmal!","Sie haben das Level leider nicht geschafft!");
             button.setText("Level nocheinmal spielen");
             button.setOnClickListener(new View.OnClickListener() {
@@ -316,10 +339,7 @@ public class SingleplayerActivity extends AppCompatActivity {
                 }
             });
         }
-
-
     }
-
 
     /**
      * Shows up when level is finished
@@ -339,49 +359,15 @@ public class SingleplayerActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    private void resetQuestionActivity(){
-        questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(getDifficulty()));
-        setContentView(R.layout.activity_question);
-        currentQuestion = 0;
-        numberOfRightAnswers = 0;
-        setupQuestionActicity();
-    }
 
-    /**
-     * gets a random question id by level
-     */
-    private void getRandomQuestionId() {
-        Random random = new Random();
-        questionIndex = random.nextInt(questions.size());
-        randQuestionId = questions.get(questionIndex).getId();
-    }
 
-    private void setupQuestionActicity(){
-        getQuestion();
-        currentQuestion ++;
-        countDownTimer = new MyCountDownTimer(10000, 1000);
-        countDownTimer.start();
-    }
 
-    /**
-     * Method for converting DP value to pixels
-     */
-    private static int getPixelsFromDPs(Activity activity){
-        Resources r = activity.getResources();
-        return (int) (TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 75, r.getDisplayMetrics()));
-    }
 
-    public void chooseAnswer(View view){
-        setContentView(R.layout.activity_answer);
-        checkAnswer();
-        countDownTimer.cancel();
-    }
 
-    public void nextQuestion(View view) {
-        setContentView(R.layout.activity_question);
-        setupQuestionActicity();
-    }
+
+
+
+
 
     private class MyCountDownTimer extends CountDownTimer {
         final TextView counter = (TextView) findViewById(R.id.counter);
