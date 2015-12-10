@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -74,8 +75,21 @@ public class SingleplayerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
+    protected void onStart() {
+        super.onStart();
+        setContentView(R.layout.activity_singleplayer_leveloverview);
+        setupLevelOverview();
+    }
+
+    protected void onResume(){
+        super.onResume();
+        setContentView(R.layout.activity_singleplayer_leveloverview);
+        setupLevelOverview();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         setContentView(R.layout.activity_singleplayer_leveloverview);
         setupLevelOverview();
     }
@@ -84,6 +98,21 @@ public class SingleplayerActivity extends AppCompatActivity {
     protected void onStop(){
         super.onStop();
         countDownTimer.cancel();
+        setContentView(R.layout.activity_singleplayer_leveloverview);
+        setupLevelOverview();
+    }
+
+    @Override
+     protected void onRestart() {
+        super.onRestart();
+        setContentView(R.layout.activity_singleplayer_leveloverview);
+        setupLevelOverview();
+    }
+
+
+    public void onBackPressed() {
+        setContentView(R.layout.activity_singleplayer_leveloverview);
+        setupLevelOverview();
     }
 
     public void chooseAnswer(View view){
@@ -123,6 +152,8 @@ public class SingleplayerActivity extends AppCompatActivity {
 
     }
 
+
+
     /**
      * Creates level overview activity
      */
@@ -130,7 +161,6 @@ public class SingleplayerActivity extends AppCompatActivity {
         GridView gridView = (GridView) findViewById(R.id.gridView);
         String[] levelNumber = new String[]{"1", "2","3","4","5","7","8","9","10","11","12","13" };
         final List<String> levelList = new ArrayList<>(Arrays.asList(levelNumber));
-
         gridView.setAdapter(new ArrayAdapter<String>(
                 this, android.R.layout.simple_list_item_1, levelList) {
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -195,6 +225,8 @@ public class SingleplayerActivity extends AppCompatActivity {
     }
 
     private void setupQuestionActicity(){
+        Log.d("Difficulty", String.valueOf(getDifficulty()));
+        Log.d("Pref", difficultKey);
         getQuestion();
         currentQuestion ++;
         countDownTimer = new MyCountDownTimer(10000, 1000);
@@ -314,6 +346,13 @@ public class SingleplayerActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (numberOfRightAnswers >= (int)(3*0.75)){
+                    int difficulty = getDifficulty()+1;
+                    setDifficulty(difficulty);
+                } else {
+                    int difficulty = getDifficulty();
+                    setDifficulty(difficulty);
+                }
                 setContentView(R.layout.activity_singleplayer_leveloverview);
                 setupLevelOverview();
             }
@@ -359,16 +398,6 @@ public class SingleplayerActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-
-
-
-
-
-
-
-
-
-
     private class MyCountDownTimer extends CountDownTimer {
         final TextView counter = (TextView) findViewById(R.id.counter);
         /**
@@ -403,9 +432,6 @@ public class SingleplayerActivity extends AppCompatActivity {
             alertDialog.show();
         }
     }
-
-
-
 
 }
 
