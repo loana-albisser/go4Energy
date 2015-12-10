@@ -51,6 +51,7 @@ public class SingleplayerActivity extends AppCompatActivity {
     private ArrayList<AnswerDTO>answers = new ArrayList<>();
 
     private final String difficultKey = "pDifficulty";
+    private int position;
 
     private int currentQuestion;
     private int numberOfRightAnswers;
@@ -153,6 +154,13 @@ public class SingleplayerActivity extends AppCompatActivity {
     }
 
 
+    private void setPosition(int position){
+        this.position = position;
+    }
+
+    private int getPosition(){
+        return position;
+    }
 
     /**
      * Creates level overview activity
@@ -198,6 +206,7 @@ public class SingleplayerActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 if (position < getDifficulty() + 1) {
+                    setPosition(position);
                     questions = new ArrayList<>(dbAdapter.getAllQuestionsByDifficulty(position));
                     setContentView(R.layout.activity_question);
                     numberOfRightAnswers = 0;
@@ -226,7 +235,6 @@ public class SingleplayerActivity extends AppCompatActivity {
 
     private void setupQuestionActicity(){
         Log.d("Difficulty", String.valueOf(getDifficulty()));
-        Log.d("Pref", difficultKey);
         getQuestion();
         currentQuestion ++;
         countDownTimer = new MyCountDownTimer(10000, 1000);
@@ -322,6 +330,8 @@ public class SingleplayerActivity extends AppCompatActivity {
     private void finishLevel(){
         final RelativeLayout relLayout = (RelativeLayout) findViewById(R.id.relLayout);
         final Button button = (Button)findViewById(R.id.btn_next);
+        final int position = getPosition();
+
         //add BackToOverview Button
         Button buttonBack = new Button(this);
         float scale =  getResources().getDisplayMetrics().density;
@@ -346,11 +356,11 @@ public class SingleplayerActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (numberOfRightAnswers >= (int)(3*0.75)){
-                    int difficulty = getDifficulty()+1;
+                int difficulty = getDifficulty();
+                if (numberOfRightAnswers >= (int)(3*0.75) && position == difficulty){
+                    difficulty++;
                     setDifficulty(difficulty);
-                } else {
-                    int difficulty = getDifficulty();
+                } else if (numberOfRightAnswers < (int)(3*0.75) && position == difficulty){
                     setDifficulty(difficulty);
                 }
                 setContentView(R.layout.activity_singleplayer_leveloverview);
