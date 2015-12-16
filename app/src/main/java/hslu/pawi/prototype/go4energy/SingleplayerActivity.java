@@ -167,7 +167,7 @@ public class SingleplayerActivity extends AppCompatActivity {
      */
     private void setupLevelOverview(){
         GridView gridView = (GridView) findViewById(R.id.gridView);
-        String[] levelNumber = new String[]{"1", "2","3","4","5","7","8","9","10","11","12","13" };
+        String[] levelNumber = new String[]{"1", "2","3","4","5","6","7","8","9","10","11","12"};
         final List<String> levelList = new ArrayList<>(Arrays.asList(levelNumber));
         gridView.setAdapter(new ArrayAdapter<String>(
                 this, android.R.layout.simple_list_item_1, levelList) {
